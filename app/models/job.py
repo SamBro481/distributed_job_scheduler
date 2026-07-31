@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 class JobStatus(str, Enum):
     CREATED = "CREATED"
     QUEUED = "QUEUED"
+    ENQUEUED = "ENQUEUED"
     RUNNING = "RUNNING"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
