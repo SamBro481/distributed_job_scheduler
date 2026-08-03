@@ -36,9 +36,19 @@ def run_worker():
             except Exception as e:
                 print(f"Job {job.id} failed: {e}")
                 
-                job.status = JobStatus.FAILED
+                job.retries += 1
+                
+                if job.retries < job.max_retries:
+                    print({f"Retrying Job {job.id} ({job.retries}/{job.max_retries})"})
+                    
+                    job.status = JobStatus.CREATED
+                
+                else:
+                    print(f"Moving Job {job.id} to DLQ")
+                    
+                    job.status = JobStatus.DLQ
+                
                 db.commit()
-
         finally:
             db.close()
 
