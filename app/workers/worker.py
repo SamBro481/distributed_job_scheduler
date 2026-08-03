@@ -1,4 +1,6 @@
 import time
+from datetime import datetime, timedelta, timezone
+
 
 from app.database.database import SessionLocal
 from app.models.job import Job, JobStatus
@@ -39,9 +41,11 @@ def run_worker():
                 job.retries += 1
                 
                 if job.retries < job.max_retries:
-                    print({f"Retrying Job {job.id} ({job.retries}/{job.max_retries})"})
-                    
+                    backoff = 2**job.retries
+                    job.run_at = datetime.now(timezone.utc) + timedelta(seconds=backoff)
                     job.status = JobStatus.CREATED
+                    
+                    print({f"Retrying Job {job.id} ({job.retries}/{job.max_retries}) in {backoff} seconds"})
                 
                 else:
                     print(f"Moving Job {job.id} to DLQ")
