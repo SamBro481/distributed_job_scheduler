@@ -1,4 +1,5 @@
 import time
+import os
 from datetime import datetime, timedelta, timezone
 
 
@@ -9,8 +10,9 @@ from app.workers.executor import execute_job
 
 
 def run_worker():
+    worker_name = os.getenv("WORKER_NAME", "WORKER")
     while True:
-        print("Waiting for jobs...")
+        print(f"{worker_name}: Waiting for jobs...")
 
         result = redis_client.brpop("job_queue")
 
@@ -26,17 +28,19 @@ def run_worker():
 
             if not job:
                 continue
-
+            
+            
+            print(f"{worker_name}: Picked Job {job.id}")
             job.status = JobStatus.RUNNING
             db.commit()
             
             try:
-                execute_job(job)
+                execute_job(job, worker_name)
                 
                 job.status = JobStatus.COMPLETED
                 db.commit()
             except Exception as e:
-                print(f"Job {job.id} failed: {e}")
+                print(f"{worker_name} Job {job.id} failed: {e}")
                 
                 job.retries += 1
                 
