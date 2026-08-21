@@ -9,6 +9,7 @@ from sqlalchemy import (
     Enum as SQLEnum,
 )
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, ForeignKey
 from app.database.database import Base
 from datetime import datetime, timezone
 
@@ -65,7 +66,7 @@ class Job(Base):
 
     )
 
-    worker_id = Column(Integer)
+    worker_id = Column(Integer, ForeignKey("workers.id"), nullable=True)
 
     error_message = Column(String)
 
