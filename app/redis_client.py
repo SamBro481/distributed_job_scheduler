@@ -1,8 +1,11 @@
 import redis
 
+from app.core.config import settings
+
+
 redis_client = redis.Redis(
-    host="localhost",
-    port=6379,
-    db=0,
-    decode_responses=True
+    host=settings.redis_host,
+    port=settings.redis_port,
+    decode_responses=True,
+    socket_timeout=None
 )
