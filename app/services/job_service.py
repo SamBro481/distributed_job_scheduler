@@ -5,9 +5,7 @@ from app.schemas.job import JobCreate
 from datetime import datetime, timezone
 
 
-def create_job(db: Session, job: JobCreate) -> Job:
-    
-
+def create_job(db: Session, job: JobCreate) -> Job:    
     new_job = Job(
         type=job.type,
         payload=job.payload,
@@ -20,3 +18,6 @@ def create_job(db: Session, job: JobCreate) -> Job:
     db.refresh(new_job)
 
     return new_job
+
+def get_jobs(db: Session):
+    return db.query(Job).order_by(Job.id.desc()).all()
